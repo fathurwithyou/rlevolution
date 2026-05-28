@@ -108,6 +108,48 @@ class Visualizer:
                     ),
                 )
             )
+
+            top_n = 3
+            top_agents = sorted(alive_agents, key=lambda a: a.fitness_score(), reverse=True)[:top_n]
+            if top_agents:
+                fig.add_trace(
+                    go.Scatter(
+                        x=[a.position[0] for a in top_agents],
+                        y=[a.position[1] for a in top_agents],
+                        mode="markers",
+                        name="Agen terbaik",
+                        marker=dict(
+                            symbol="star",
+                            size=[14 + 4 * a.traits.foraging for a in top_agents],
+                            color="rgba(255, 215, 0, 0.85)",
+                            line=dict(color="#B8860B", width=2.5),
+                        ),
+                        customdata=[
+                            [
+                                a.agent_id,
+                                a.energy,
+                                a.fitness_score(),
+                                a.age,
+                                a.traits.speed,
+                                a.traits.endurance,
+                                a.traits.foraging,
+                                a.traits.reproduction,
+                            ]
+                            for a in top_agents
+                        ],
+                        hovertemplate=(
+                            "★ Agen Terbaik %{customdata[0]}<br>"
+                            "Energi=%{customdata[1]:.1f}<br>"
+                            "Fitness=%{customdata[2]:.1f}<br>"
+                            "Umur=%{customdata[3]}<br>"
+                            "Speed=%{customdata[4]:.2f}<br>"
+                            "Endurance=%{customdata[5]:.2f}<br>"
+                            "Foraging=%{customdata[6]:.2f}<br>"
+                            "Reproduksi=%{customdata[7]:.2f}<extra></extra>"
+                        ),
+                    )
+                )
+
         else:
             fig.add_annotation(
                 text="Populasi punah",
