@@ -1,0 +1,66 @@
+\begin{thebibliography}{9}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Baldwin(1896)]{baldwin1896new}
+James~Mark Baldwin.
+\newblock A new factor in evolution.
+\newblock \emph{The American Naturalist}, 30\penalty0 (354):\penalty0 441--451,
+  1896.
+\newblock \doi{10.1086/276408}.
+
+\bibitem[Darwin(1859)]{darwin1859origin}
+Charles Darwin.
+\newblock \emph{On the Origin of Species by Means of Natural Selection}.
+\newblock John Murray, London, 1859.
+
+\bibitem[Downing(2012)]{downing2012baldwin}
+Keith~L. Downing.
+\newblock The baldwin effect: A review of the literature.
+\newblock \emph{Biology and Philosophy}, 27\penalty0 (6):\penalty0 869--889,
+  2012.
+\newblock \doi{10.1007/s10539-012-9333-x}.
+
+\bibitem[Gilbert(2008)]{gilbert2008agent}
+Nigel Gilbert.
+\newblock \emph{Agent-Based Models}.
+\newblock SAGE Publications, London, 2008.
+
+\bibitem[Holland(1992)]{holland1992adaptation}
+John~H. Holland.
+\newblock \emph{Adaptation in Natural and Artificial Systems: An Introductory
+  Analysis with Applications to Biology, Control, and Artificial Intelligence}.
+\newblock MIT Press, Cambridge, MA, 1992.
+
+\bibitem[Mitchell(1998)]{mitchell1998introduction}
+Melanie Mitchell.
+\newblock \emph{An Introduction to Genetic Algorithms}.
+\newblock MIT Press, Cambridge, MA, 1998.
+
+\bibitem[Sutton and Barto(2018)]{sutton2018reinforcement}
+Richard~S. Sutton and Andrew~G. Barto.
+\newblock \emph{Reinforcement Learning: An Introduction}.
+\newblock MIT Press, Cambridge, MA, 2 edition, 2018.
+
+\bibitem[Towers et~al.(2024)Towers, Kwiatkowski, Terry, Balis, De~Cola, Deleu,
+  Goul{\~a}o, Kallinteris, Krimmel, KG, Perez-Vicente, Pierr{\'e}, Schulhoff,
+  Tai, Tan, and Younis]{towers2024gymnasium}
+Mark Towers, Ariel Kwiatkowski, Jordan~K. Terry, John~U. Balis, Gianluca
+  De~Cola, Tristan Deleu, Manuel Goul{\~a}o, Andreas Kallinteris, Markus
+  Krimmel, Arjun KG, Rodrigo Perez-Vicente, Andrea Pierr{\'e}, Sander
+  Schulhoff, Jun~Jet Tai, Hannah Tan, and Omar~G. Younis.
+\newblock Gymnasium: A standard interface for reinforcement learning
+  environments.
+\newblock \emph{CoRR}, abs/2407.17032, 2024.
+\newblock \doi{10.48550/arXiv.2407.17032}.
+
+\bibitem[Watkins and Dayan(1992)]{watkins1992q}
+Christopher J. C.~H. Watkins and Peter Dayan.
+\newblock Q-learning.
+\newblock \emph{Machine Learning}, 8\penalty0 (3--4):\penalty0 279--292, 1992.
+\newblock \doi{10.1007/BF00992698}.
+
+\end{thebibliography}
