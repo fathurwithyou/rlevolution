@@ -1,6 +1,6 @@
 \documentclass[10pt]{article}
 
-\usepackage[margin=0.68in]{geometry}
+\usepackage[margin=0.62in]{geometry}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{xurl}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
@@ -12,7 +12,7 @@
 \usetikzlibrary{arrows.meta,positioning,shapes.geometric}
 
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{2.8pt}
+\setlength{\parskip}{2.2pt}
 \emergencystretch=2em
 \renewcommand{\refname}{Referensi}
 \renewcommand{\figurename}{Gambar}
@@ -47,17 +47,17 @@ Hubungan antara pembelajaran individual dan evolusi populasi dapat dilihat melal
 Pertanyaan penelitian yang dikaji adalah, \textit{bagaimana Q-learning dapat menyimulasikan adaptasi agen di bawah tekanan seleksi alam, dan bagaimana perubahan parameter mutasi, bahaya, serta eksplorasi memengaruhi fitness dan sifat populasi?} Tujuan penelitian ini adalah menyusun eksperimen terukur untuk menilai kontribusi pembelajaran perilaku dan seleksi alam dalam dinamika populasi buatan. Kontribusinya adalah kerangka evaluasi yang dapat dijalankan ulang, dilengkapi metrik kuantitatif dan interpretasi biologis.
 
 \section{Metode}
-Model penelitian terdiri atas empat komponen utama, yaitu populasi agen adaptif, lingkungan dua dimensi dengan makanan dan bahaya, mekanisme pembelajaran perilaku berbasis Q-learning, serta mekanisme evolusi berupa seleksi induk, crossover, dan mutasi. Simulasi dijalankan sebagai eksperimen komputasional berulang sehingga perubahan fitness, survival, reproduksi, dan sifat populasi dapat diamati lintas generasi.
+Model penelitian terdiri atas empat komponen utama, yaitu populasi agen adaptif, lingkungan dua dimensi dengan makanan dan bahaya, mekanisme pembelajaran perilaku berbasis Q-learning, serta mekanisme evolusi berupa seleksi induk, crossover, dan mutasi. Implementasi dibuat modular melalui lapisan \texttt{domain/}, \texttt{rl/}, \texttt{environment/}, \texttt{evolution/}, \texttt{simulation/}, \texttt{visualization/}, dan \texttt{ui/}, sehingga simulasi, penyimpanan data, dan dashboard dapat dikembangkan secara terpisah. Hubungan antara arsitektur modul dan alur simulasi diringkas pada Gambar \ref{fig:system-flow}. Simulasi dijalankan sebagai eksperimen komputasional berulang sehingga perubahan fitness, survival, reproduksi, dan sifat populasi dapat diamati lintas generasi.
 
 Setiap agen memiliki empat sifat. \textit{Speed} meningkatkan jarak gerak, tetapi menaikkan biaya metabolisme. \textit{Endurance} menurunkan biaya gerak dan dampak bahaya. \textit{Foraging} meningkatkan efektivitas pengambilan makanan. \textit{Reproduction} menaikkan peluang reproduksi ketika dua agen cukup dekat dan memiliki energi memadai.
 
-Lingkungan berbentuk bidang dua dimensi berukuran 100 x 72. Makanan disebar secara acak dan diganti setiap kali berhasil dikonsumsi, sedangkan zona bahaya berbentuk lingkaran dengan radius tertentu. Agen kehilangan energi akibat metabolisme dan pergerakan. Ketika berada dalam zona bahaya, energi agen berkurang lebih besar, sedangkan ketika mencapai makanan, energi bertambah sesuai kemampuan foraging. Agen mati apabila energi habis atau umur melewati batas maksimum. Dengan demikian, setiap tindakan memiliki konsekuensi, misalnya bergerak dapat mendekatkan agen ke makanan atau pasangan, tetapi juga menghabiskan energi dan dapat membawa agen ke zona berbahaya.
+Lingkungan berbentuk bidang dua dimensi berukuran 100 x 72. Makanan disebar secara acak dan diganti setiap kali berhasil dikonsumsi, sedangkan zona bahaya berbentuk lingkaran dengan radius tertentu. Pada konfigurasi default dashboard, lingkungan berisi 85 makanan dengan radius dasar 2,4 dan 5 zona bahaya dengan radius 7,5. Agen kehilangan energi akibat metabolisme dan pergerakan dengan biaya dasar $0{,}32(1+0{,}38\|v\|s)/e$, memperoleh energi $28f$ ketika makan, dan kehilangan energi $18/e$ ketika berada di zona bahaya. Agen mati apabila energi habis atau umur melewati batas maksimum. Dengan demikian, setiap tindakan memiliki konsekuensi, misalnya bergerak dapat mendekatkan agen ke makanan atau pasangan, tetapi juga menghabiskan energi dan dapat membawa agen ke zona berbahaya.
 
-State agen didiskretisasi menjadi 10 komponen, yaitu posisi $x$ dan $y$, arah dan jarak makanan terdekat, arah dan jarak bahaya terdekat, energi, dan umur. Aksi terdiri atas bergerak ke atas, bawah, kiri, kanan, diam, dan mencari pasangan reproduksi. Model Q-learning menggunakan aturan
+State agen didiskretisasi menjadi 10 komponen, yaitu posisi $x$ dan $y$, arah dan jarak makanan terdekat, arah dan jarak bahaya terdekat, energi, dan umur. Representasi ini setara dengan \texttt{MultiDiscrete([5,5,3,3,5,3,3,5,5,5])} dengan ruang state maksimum 253.125 kombinasi. Aksi terdiri atas bergerak ke atas, bawah, kiri, kanan, diam, dan mencari pasangan reproduksi. Model Q-learning menggunakan aturan
 \[
 Q(s,a) \leftarrow Q(s,a) + \alpha \left(r + \gamma \max_{a'}Q(s',a') - Q(s,a)\right),
 \]
-dengan $\alpha=0{,}22$, $\gamma=0{,}92$, dan $\epsilon=0{,}18$ pada baseline. Reward positif diberikan untuk bertahan hidup, memakan makanan, dan reproduksi berhasil, sementara reward negatif diberikan untuk bahaya, kegagalan reproduksi, biaya pencarian pasangan, dan kematian.
+dengan $\alpha=0{,}22$, $\gamma=0{,}92$, dan $\epsilon=0{,}18$ pada baseline. Pada konfigurasi default, eksplorasi meluruh mengikuti $\epsilon_t=\max(0{,}04,0{,}18\times0{,}985^{\mathrm{gen}})$. Reward positif diberikan untuk bertahan hidup ($+0{,}08$), memakan makanan ($+8{,}0$), dan reproduksi berhasil ($+18{,}0$), sementara reward negatif diberikan untuk bahaya ($-9{,}0$), kegagalan reproduksi, biaya pencarian pasangan, dan kematian ($-18{,}0$).
 
 Metode tabular lain yang relevan sebagai pembanding adalah SARSA dan Expected SARSA \citep{sutton2018reinforcement}. SARSA bersifat on-policy karena memperbarui nilai berdasarkan aksi aktual $a'$ yang dipilih policy,
 \[
@@ -87,7 +87,7 @@ Fitness dihitung dari total reward, umur, makanan, reproduksi, bahaya, dan statu
 \[
 F = R + 0{,}09A + 9{,}5M + 22B - 4H + L,
 \]
-dengan $R$ total reward, $A$ umur, $M$ jumlah makanan, $B$ jumlah reproduksi, $H$ paparan bahaya, dan $L=12$ jika agen masih hidup. Seleksi induk menggunakan fitness-proportionate selection dengan tekanan seleksi 1,35. Anak mewarisi rata-rata sifat dua induk, mengalami mutasi, dan menerima Q-table hasil crossover serta mutasi nilai Q.
+dengan $R$ total reward, $A$ umur, $M$ jumlah makanan, $B$ jumlah reproduksi, $H$ paparan bahaya, dan $L=12$ jika agen masih hidup. Nilai akhir dibatasi dengan $F_{\mathrm{final}}=\max(0{,}1,F)$. Seleksi induk menggunakan fitness-proportionate selection dengan tekanan seleksi 1,35. Anak mewarisi rata-rata sifat dua induk, mengalami mutasi, dan menerima Q-table hasil crossover serta mutasi nilai Q.
 
 Probabilitas agen $i$ dipilih sebagai induk adalah
 \[
@@ -98,9 +98,9 @@ sedangkan mutasi trait anak dimodelkan sebagai
 z_{\mathrm{anak}}=\mathrm{clip}\!\left(\frac{z_1+z_2}{2}+\eta,\;z_{\min},z_{\max}\right), \quad
 \eta\sim \begin{cases}\mathcal{N}(0,\sigma_z^2),& u<\mu,\\0,&u\geq\mu,\end{cases}
 \]
-dengan $\mu$ laju mutasi dan $z$ salah satu trait biologis.
+dengan $\mu$ laju mutasi dan $z$ salah satu trait biologis. Dua induk dipilih dengan replacement untuk setiap anak. Crossover Q-table dilakukan secara uniform, sedangkan mutasi nilai Q dilakukan per entri dengan peluang 0,12 dan noise $\mathcal{N}(0,0{,}08)$.
 
-Dalam proses reproduksi, dua agen harus sama-sama hidup, memiliki energi di atas ambang reproduksi, dan berada dalam radius reproduksi. Apabila syarat ini terpenuhi, peluang keberhasilan ditentukan oleh rata-rata sifat \textit{reproduction} kedua agen. Reproduksi mengurangi energi induk, tetapi menambah individu baru. Pada akhir generasi, populasi berikutnya dibentuk melalui seleksi induk berdasarkan fitness. Hal ini membedakan kelahiran langsung dalam episode dari regenerasi populasi antar generasi.
+Dalam proses reproduksi, dua agen harus sama-sama hidup, memiliki energi minimal 58,0, berada dalam radius reproduksi 6,0, dan populasi masih kurang dari 90. Apabila syarat ini terpenuhi, peluang keberhasilan ditentukan oleh rata-rata sifat \textit{reproduction} kedua agen. Reproduksi mengurangi energi induk sebesar 20,0 dan energi pasangan sebesar 13,0, tetapi menambah individu baru dengan energi awal sekitar 42,16. Pada akhir generasi, populasi berikutnya dibentuk melalui seleksi induk berdasarkan fitness. Hal ini membedakan kelahiran langsung dalam episode dari regenerasi populasi antar generasi.
 
 Untuk dua agen yang memenuhi syarat jarak dan energi, peluang reproduksi ditulis sebagai
 \[
@@ -112,35 +112,72 @@ Terdapat empat asumsi model yang penting. Pertama, genotipe disederhanakan menja
 
 \begin{figure}[h]
 \centering
+\begin{minipage}[t]{0.47\textwidth}
+\centering
+\textbf{(a) Alur simulasi}\\[3pt]
 \begin{tikzpicture}[
-  node distance=0.82cm,
-  box/.style={rectangle,draw,rounded corners,align=center,minimum width=2.75cm,minimum height=0.58cm,font=\small},
-  decision/.style={diamond,draw,aspect=2.15,align=center,inner sep=1pt,font=\small},
-  arrow/.style={-{Latex[length=2mm]},thick}
+  scale=0.82, transform shape,
+  node distance=0.58cm,
+  box/.style={rectangle,draw,rounded corners,align=center,minimum width=2.45cm,minimum height=0.46cm,font=\scriptsize},
+  decision/.style={diamond,draw,aspect=2.15,align=center,inner sep=0.5pt,font=\scriptsize},
+  arrow/.style={-{Latex[length=1.6mm]},thick}
 ]
-\node[box] (init) {Populasi, makanan,\\dan bahaya};
+\node[box] (init) {Populasi, makanan,\\bahaya};
 \node[box,below=of init] (state) {Diskretisasi state};
 \node[box,below=of state] (act) {Aksi $\epsilon$-greedy};
-\node[box,below=of act] (env) {Reward, energi,\\makanan, bahaya};
+\node[box,below=of act] (env) {Reward dan energi};
 \node[box,below=of env] (update) {Pembaruan Q-table};
-\node[decision,below=of update,yshift=-0.04cm] (finish) {Episode\\selesai?};
-\node[box,right=2.2cm of finish] (select) {Fitness dan\\seleksi induk};
+\node[decision,below=of update,yshift=-0.03cm] (finish) {Episode\\selesai?};
+\node[box,right=1.85cm of finish] (select) {Fitness dan\\seleksi};
 \node[box,above=of select] (child) {Crossover, mutasi,\\generasi baru};
 \draw[arrow] (init) -- (state);
 \draw[arrow] (state) -- (act);
 \draw[arrow] (act) -- (env);
 \draw[arrow] (env) -- (update);
 \draw[arrow] (update) -- (finish);
-\draw[arrow] (finish.west) -- ++(-1.0,0) |- node[left,pos=0.25]{Tidak} (state.west);
+\draw[arrow] (finish.west) -- ++(-0.7,0) |- node[left,pos=0.25]{Tidak} (state.west);
 \draw[arrow] (finish) -- node[below]{Ya} (select);
 \draw[arrow] (select) -- (child);
 \draw[arrow] (child) |- (state.east);
 \end{tikzpicture}
-\caption{Alur simulasi adaptasi agen.}
-\label{fig:flow}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.47\textwidth}
+\centering
+\textbf{(b) Arsitektur sistem}\\[3pt]
+\vspace{0.32cm}
+\begin{tikzpicture}[
+  scale=0.82, transform shape,
+  node distance=0.45cm,
+  box/.style={rectangle,draw,rounded corners,align=center,minimum width=1.55cm,minimum height=0.42cm,font=\scriptsize},
+  wide/.style={rectangle,draw,rounded corners,align=center,minimum width=4.45cm,minimum height=0.42cm,font=\scriptsize},
+  arrow/.style={-{Latex[length=1.6mm]},thick}
+]
+\node[box,fill=gray!12] (config) at (0,0) {\texttt{config/}};
+\node[box,fill=gray!12,right=1.0cm of config] (persist) {\texttt{persistence/}};
+\node[box,fill=blue!10,below=0.6cm of config] (domain) {\texttt{domain/}};
+\node[box,fill=blue!10,right=0.35cm of domain] (rl) {\texttt{rl/}};
+\node[box,fill=blue!10,right=0.35cm of rl] (env) {\texttt{environment/}};
+\node[box,fill=blue!10,right=0.35cm of env] (evol) {\texttt{evolution/}};
+\node[wide,fill=green!10,below=0.65cm of rl,xshift=1.0cm] (engine) {\texttt{simulation/} -- EvolutionEngine};
+\node[box,fill=orange!12,below=0.65cm of engine,xshift=-1.05cm] (viz) {\texttt{visualization/}};
+\node[box,fill=orange!12,right=0.7cm of viz] (ui) {\texttt{ui/}};
+\draw[arrow] (config) -- (domain);
+\draw[arrow] (config) -- (rl);
+\draw[arrow] (domain) -- (engine);
+\draw[arrow] (rl) -- (engine);
+\draw[arrow] (env) -- (engine);
+\draw[arrow] (evol) -- (engine);
+\draw[arrow] (engine) -- (persist);
+\draw[arrow] (engine) -- (viz);
+\draw[arrow] (viz) -- (ui);
+\end{tikzpicture}
+\end{minipage}
+\caption{Arsitektur sistem dan alur simulasi adaptasi agen.}
+\label{fig:system-flow}
 \end{figure}
 
-Eksperimen menggunakan 32 agen awal, 75 makanan, 12 generasi, 260 langkah per generasi, dan tiga seed, yaitu 3211, 3212, dan 3213. Tujuh skenario diuji, yaitu baseline, mutasi rendah ($0{,}02$), mutasi tinggi ($0{,}30$), hazard rendah (2 zona), hazard tinggi (9 zona), tanpa eksplorasi ($\epsilon=0$), dan eksplorasi tinggi ($\epsilon=0{,}35$). Analisis dilakukan pada dua tingkat, yaitu agregasi lintas skenario dan dinamika temporal pada replikasi baseline.
+Mode dashboard menggunakan konfigurasi default 36 agen awal, 85 makanan, 5 bahaya, 24 generasi, dan 420 langkah per generasi, lalu menyimpan riwayat ke \texttt{data/experiment\_history.csv}. Laporan ini memakai hasil eksperimen yang sudah tersedia di \texttt{docs/experiments/rl\_evolution/}, yaitu 32 agen awal, 75 makanan, 12 generasi, 260 langkah per generasi, dan tiga seed (3211, 3212, 3213). Tujuh skenario diuji, yaitu baseline, mutasi rendah ($0{,}02$), mutasi tinggi ($0{,}30$), hazard rendah (2 zona), hazard tinggi (9 zona), tanpa eksplorasi ($\epsilon=0$), dan eksplorasi tinggi ($\epsilon=0{,}35$). Analisis dilakukan pada dua tingkat, yaitu agregasi lintas skenario dan dinamika temporal pada replikasi baseline.
 
 \begin{table}[h]
 \centering
@@ -227,7 +264,7 @@ Penelitian ini menunjukkan bahwa simulasi RL Evolution Lab dapat digunakan untuk
 
 Hasil simulasi menunjukkan bahwa pembelajaran perilaku melalui Q-learning dapat memperkuat adaptasi populasi ketika didukung variasi genetik dan tekanan seleksi yang memadai. Namun, performa populasi tidak hanya ditentukan oleh fitness akhir, melainkan juga oleh stabilitas antar-seed, survival rate, reproduksi, paparan bahaya, dan luasnya eksplorasi state. Karena itu, model ini lebih tepat dipahami sebagai kerangka eksploratif untuk mempelajari interaksi learning--evolution daripada sebagai model biologis empiris.
 
-Saran penelitian berikutnya adalah menjalankan lebih banyak seed, memperpanjang jumlah generasi, membandingkan SARSA atau Expected SARSA dengan Q-learning, menguji mode pewarisan Q-table, menguji sensitivitas bobot fitness, dan membandingkan diskretisasi state. Ablation study juga perlu mencakup evolusi tanpa RL dan RL tanpa pewarisan Q-table. Untuk lingkungan yang lebih kompleks, DQN, Policy Gradient, atau Actor-Critic dapat dipakai ketika state dibuat kontinu atau berdimensi tinggi. Uji statistik seperti interval kepercayaan, ANOVA, atau Kruskal--Wallis dapat ditambahkan untuk memperkuat klaim antarskenario.
+Saran penelitian berikutnya adalah menjalankan lebih banyak seed, memperpanjang jumlah generasi, membandingkan SARSA atau Expected SARSA dengan Q-learning, menguji mode pewarisan Q-table, menguji sensitivitas bobot fitness, dan membandingkan diskretisasi state. Ablation study juga perlu mencakup evolusi tanpa RL dan RL tanpa pewarisan Q-table. Untuk lingkungan yang lebih kompleks, misalnya predator, musim, dan sumber daya dinamis, DQN, Policy Gradient, atau Actor-Critic dapat dipakai ketika state dibuat kontinu atau berdimensi tinggi. Uji statistik seperti interval kepercayaan, ANOVA, atau Kruskal--Wallis dapat ditambahkan untuk memperkuat klaim antarskenario.
 
 \textbf{Tautan rekaman video:} \url{https://youtu.be/VirODtKpGyA?si=LIk0oSbKHHu3dvQb}
 
